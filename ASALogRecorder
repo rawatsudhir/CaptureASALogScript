@@ -14,6 +14,8 @@ $folder ="C:\temp\"
 ## ======================================
 $folder = $folder + "StreamAnalytics\"
 
+Switch-AzureMode AzureResourceManager
+
 If ( !(Get-module AzureResourceManager )) { 
     Write-Host "The Azure PowerShell SDK may not be installed. This script requires it." -ForegroundColor Red
     Write-Host "Get the download at http://azure.microsoft.com/en-us/downloads/ and click Install under the _Windows PowerShell_ heading."  -ForegroundColor Cyan
@@ -25,8 +27,6 @@ If ( !(Get-module AzureResourceManager )) {
     Import-Module AzureResourceManager
     Return
 }
-
-Switch-AzureMode AzureResourceManager
 
 # See if any User is logged in
 $Accounts = Get-AzureAccount 
