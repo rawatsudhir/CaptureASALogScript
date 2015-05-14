@@ -1,11 +1,11 @@
+## The File is uploaded at https://github.com/rawatsudhir/CaptureASALogScript as well. Any change for betterment please change it to github as well.  
 ## This Powershell (.ps1) script is used to collect Microsoft Azure Stream Analytics job definitions and operation logs for a given account,
 ## For the intent of sharing this information with the Microsoft CSS Azure Support Team engineers for troubleshooting purposes.
 ## 1. Please set the output folder below if C:\Temp is not sufficient. At the end, the output will be zipped into that location.
 ## 2. The script will prompt you for your Azure credential if you do not have it actively configured.
 ## 3. The script will prompt you on which job to collect data for, or all jobs as needed.
 ## 4. The script will prompt you to choose between 1 to 14 days worth of Operation Log events to collect.
-## Last Change on 30-04-2015
-## Version:-2
+
 
 # Pick an Output folder before you run the code if needed to change.
 $folder ="C:\temp\"
@@ -14,17 +14,6 @@ $folder ="C:\temp\"
 ## ======================================
 $folder = $folder + "StreamAnalytics\"
 
-If ( !(Get-module AzureResourceManager )) { 
-    Write-Host "The Azure PowerShell SDK may not be installed. This script requires it." -ForegroundColor Red
-    Write-Host "Get the download at http://azure.microsoft.com/en-us/downloads/ and click Install under the _Windows PowerShell_ heading."  -ForegroundColor Cyan
-    Write-Host "Check the browser now... "
-    $IE=new-object -com internetexplorer.application
-    $IE.navigate2("http://azure.microsoft.com/en-us/downloads/")
-    $IE.visible=$true
-
-    Import-Module AzureResourceManager
-    Return
-}
 
 Switch-AzureMode AzureResourceManager
 
@@ -35,13 +24,12 @@ If ($Accounts.Count -ne 0)
 {
     Write-Host "Current user account in this PowerShell window is" -ForegroundColor Yellow
     $Accounts | ConvertTo-JSON | Out-Host
+    $SubscriptionId = Get-AzureSubscription -Current
 }
 Else #Need to prompt for the User name 
 {
    Add-AzureAccount    
 }
-
-
 
 ## Helper Function to do the output prints
 function PrintJobAndLog
@@ -78,14 +66,16 @@ function PrintJobAndLog
             Remove-Item $FilePathCSV 
         }
 
-        
+        $ResourceId = "/subscriptions/" + $SubscriptionId.SubscriptionID + "/resourceGroups/" + $PrintJob.ResourceGroupName + "/providers/Microsoft.StreamAnalytics/streamingjobs/" + $PrintJob.JobName
+
         Write-Host 'Writing log files.... at ' $FilePath ' and ' $FilePathJSON -ForegroundColor Yellow
 
         #Write out the information to files
         "The current user account in this PowerShell output is"                 | Out-File $FilePath -Append
                                                      $Accounts | ConvertTo-JSON | Out-File $FilePath -Append
+        'Subscription:- ' +  $SubscriptionId.SubscriptionID                     | Out-File $FilePath -Append
         'Resource Name:- ' + $PrintJob.ResourceGroupName                        | Out-File $FilePath -Append
-
+        
         '*****************************Log Report******************************' | Out-File $FilePath -Append
         "`r`n" + 'Job Name:- ' + $PrintJob.JobName                              | Out-File $FilePath -Append
         'Resource Name:- ' + $PrintJob.ResourceGroupName                        | Out-File $FilePath -Append
@@ -111,10 +101,11 @@ function PrintJobAndLog
 
         # Print the Operation Logs - may take a while
         "`r`n" + 'LOGS START FROM DATE :- ' + $BeginDate                         | Out-File $FilePath -Append
-        Get-AzureResourceProviderLog -ResourceProvider Microsoft.StreamAnalytics -DetailedOutput -StartTime $BeginDate `
-                                                                                 | Out-File $FilePath -Append 
-        Get-AzureResourceProviderLog -ResourceProvider Microsoft.StreamAnalytics -DetailedOutput -StartTime $BeginDate  | ConvertTo-Json `
-                                                                                 | Out-File $FilePathJSON
+        
+        Get-AzureResourceLog -ResourceId $ResourceId -DetailedOutput -StartTime $BeginDate | Out-File $FilePath -Append
+
+        Get-AzureResourceLog -ResourceId $ResourceId -DetailedOutput -StartTime $BeginDate | ConvertTo-Json | Out-File $FilePathJSON
+
         '===================================================================== ' | Out-File $FilePath -Append
 
         Write-Host 'Finished Writing log files.... at ' $FilePath ' and ' $FilePathJSON -ForegroundColor Yellow
@@ -127,7 +118,6 @@ function PrintJobAndLog
 }
 
 ## Main
-
 
 #Put all jobs into a collection
 Write-Host "Enumerating your Stream Analytics jobs" -ForegroundColor Cyan
@@ -195,8 +185,6 @@ $AllJobs | Format-Table -Property * -AutoSize | Out-String -Width 4096 | Out-Fil
 $AllJobs | ConvertTo-Json | Out-File $FileAllJobsPath -Append
 
 
-
-
 #Get input from the user to specify a number of days of log data to collect between 1 and 14 (15 max may cause errors)
 Do{
     Write-Host 'How many past days worth of logs do you want to gather? 14 days maximum.' -ForegroundColor Cyan
@@ -258,4 +246,3 @@ Catch
 {
     Write-Host "Done. Could not generate Zip file. Please zip the folder ", $folder,  "and send to Microsoft Support." -BackgroundColor Red
 }
-
