@@ -8,4 +8,4 @@ Change machine's PowerShell execution policy to Unrestricted (see [this] (http:/
 
 
 # Install Prerequisites
-* Install [Windows Azure SDK] (http://www.windowsazure.com/en-us/develop/net/) . Click Azure PowerShell release.
+* Install [Windows Azure SDK] (http://www.windowsazure.com/en-us/develop/net/) . Click Azure PowerShell release on the page.
