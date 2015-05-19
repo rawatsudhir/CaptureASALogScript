@@ -9,4 +9,6 @@ In case you get error while running the PowerShell cmdlet regarding to execution
 * If Windows Azure SDK is already installed please make sure to have latest version from [here] (https://github.com/Azure/azure-powershell/releases).
 
 # Execute Package
-* Execute CaptureASALogScript\ASALogRecorder.ps1
+* Once you downloaded the file (ASALogRecorder.ps1), open it in PowerShell ISE
+* Go through the script to check the steps it runs
+* Execute or Press F5 
