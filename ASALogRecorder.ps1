@@ -14,8 +14,16 @@ $folder ="C:\temp\"
 ## ======================================
 $folder = $folder + "StreamAnalytics\"
 
+Try
+{
 
-Switch-AzureMode AzureResourceManager
+    Switch-AzureMode AzureResourceManager
+}
+Catch
+{
+    Write-Host "Error The Azure SDK may not be installed. Switch-AzureMode AzureResourceManager failed" -ForegroundColor Red
+    Return
+} 
 
 # See if any User is logged in
 $Accounts = Get-AzureAccount 
