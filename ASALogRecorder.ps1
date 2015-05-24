@@ -1,4 +1,3 @@
-## The File is uploaded at https://github.com/rawatsudhir/CaptureASALogScript as well. Any change for betterment please change it to github as well.  
 ## This Powershell (.ps1) script is used to collect Microsoft Azure Stream Analytics job definitions and operation logs for a given account,
 ## For the intent of sharing this information with the Microsoft CSS Azure Support Team engineers for troubleshooting purposes.
 ## 1. Please set the output folder below if C:\Temp is not sufficient. At the end, the output will be zipped into that location.
