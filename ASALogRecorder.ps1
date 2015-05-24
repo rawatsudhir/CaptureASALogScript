@@ -1,4 +1,4 @@
-﻿## The File is uploaded at https://github.com/rawatsudhir/CaptureASALogScript as well. Any change for betterment please change it to github as well.  
+## The File is uploaded at https://github.com/rawatsudhir/CaptureASALogScript as well. Any change for betterment please change it to github as well.  
 ## This Powershell (.ps1) script is used to collect Microsoft Azure Stream Analytics job definitions and operation logs for a given account,
 ## For the intent of sharing this information with the Microsoft CSS Azure Support Team engineers for troubleshooting purposes.
 ## 1. Please set the output folder below if C:\Temp is not sufficient. At the end, the output will be zipped into that location.
@@ -129,7 +129,16 @@ function PrintJobAndLog
 
 #Put all jobs into a collection
 Write-Host "Enumerating your Stream Analytics jobs" -ForegroundColor Cyan
-$AllJobs = Get-AzureStreamAnalyticsJob -NoExpand
+
+Try
+    {
+
+        $AllJobs = Get-AzureStreamAnalyticsJob -NoExpand
+    }
+Catch
+    {
+        Write-Host "Error in retrieving stream analytics job : ", $_ -BackgroundColor Red
+    }
 
 #Number the jobs 0 to ... then print the table to the screen
 [System.Int32] $i = 0
