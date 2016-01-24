@@ -6,7 +6,7 @@
 ## 4. The script will prompt you to choose between 1 to 14 days worth of Operation Log events to collect.
 
 Login-AzureRmAccount
-# Below statement used to capture subscription id in variable.
+# Below statement used to capture subscription id in a variable.
 $SubscriptionId = Get-AzureSubscription -Current
 
 # Pick an Output folder before you run the code if needed to change.
