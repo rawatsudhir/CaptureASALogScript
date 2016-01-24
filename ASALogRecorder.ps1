@@ -5,6 +5,9 @@
 ## 3. The script will prompt you on which job to collect data for, or all jobs as needed.
 ## 4. The script will prompt you to choose between 1 to 14 days worth of Operation Log events to collect.
 
+Login-AzureRmAccount
+# Below statement used to capture subscription id in variable.
+$SubscriptionId = Get-AzureSubscription -Current
 
 # Pick an Output folder before you run the code if needed to change.
 $folder ="C:\temp\"
@@ -12,31 +15,6 @@ $folder ="C:\temp\"
 ## No Edits below here required
 ## ======================================
 $folder = $folder + "StreamAnalytics\"
-
-Try
-{
-
-    Switch-AzureMode AzureResourceManager
-}
-Catch
-{
-    Write-Host "Error The Azure SDK may not be installed. Switch-AzureMode AzureResourceManager failed" -ForegroundColor Red
-    Return
-} 
-
-# See if any User is logged in
-$Accounts = Get-AzureAccount 
-$Accounts = $Accounts | Where-Object { $_.Type -eq 'User' }
-If ($Accounts.Count -ne 0) 
-{
-    Write-Host "Current user account in this PowerShell window is" -ForegroundColor Yellow
-    $Accounts | ConvertTo-JSON | Out-Host
-    $SubscriptionId = Get-AzureSubscription -Current
-}
-Else #Need to prompt for the User name 
-{
-   Add-AzureAccount    
-}
 
 ## Helper Function to do the output prints
 function PrintJobAndLog
@@ -91,17 +69,17 @@ function PrintJobAndLog
 
         '=====================================================================' | Out-File $FilePath -Append
         "`r`n" + 'Azure Stream Analytic Input Job Definition....              ' | Out-File $FilePath -Append
-        Get-AzureStreamAnalyticsInput -ResourceGroupName $PrintJob.ResourceGroupName -JobName $PrintJob.JobName `
+        Get-AzureRmStreamAnalyticsInput -ResourceGroupName $PrintJob.ResourceGroupName -JobName $PrintJob.JobName `
                                                                                 | Out-File $FilePath -Append
         'End of Azure Stream Analytic Input Job Definition....                ' | Out-File $FilePath -Append
         '=====================================================================' | Out-File $FilePath -Append
         "`r`n" + 'Azure Stream Analytic Transformation Job Definition....     ' | Out-File $FilePath -Append
-        Get-AzureStreamAnalyticsTransformation -ResourceGroupName $PrintJob.ResourceGroupName -JobName $PrintJob.JobName -Name $PrintJob.JobName `
+        Get-AzureRmStreamAnalyticsTransformation -ResourceGroupName $PrintJob.ResourceGroupName -JobName $PrintJob.JobName -Name $PrintJob.JobName `
                                                                                 | Out-File $FilePath -Append
         'End of Azure Stream Analytic Transformation Job Definition....       ' | Out-File $FilePath -Append
         '=====================================================================' | Out-File $FilePath -Append
         "`r`n" + 'Azure Stream Analytic Output Job Definition....             ' | Out-File $FilePath -Append
-        Get-AzureStreamAnalyticsOutput -ResourceGroupName $PrintJob.ResourceGroupName -JobName $PrintJob.JobName `
+        Get-AzureRmStreamAnalyticsOutput -ResourceGroupName $PrintJob.ResourceGroupName -JobName $PrintJob.JobName `
                                                                                 | Out-File $FilePath -Append
         'End of Azure Stream Analytic Output Job Definition....               ' | Out-File $FilePath -Append
         '=====================================================================' | Out-File $FilePath -Append
@@ -109,9 +87,12 @@ function PrintJobAndLog
         # Print the Operation Logs - may take a while
         "`r`n" + 'LOGS START FROM DATE :- ' + $BeginDate                         | Out-File $FilePath -Append
         
-        Get-AzureResourceLog -ResourceId $ResourceId -DetailedOutput -StartTime $BeginDate | Out-File $FilePath -Append
+        Get-AzureRmlog -ResourceId $ResourceId -DetailedOutput -StartTime $BeginDate | Out-File $FilePath -Append
 
-        Get-AzureResourceLog -ResourceId $ResourceId -DetailedOutput -StartTime $BeginDate | ConvertTo-Json | Out-File $FilePathJSON
+        Write-Host $ResourceId
+        Write-Host $BeginDate
+
+        Get-AzureRmlog -ResourceId $ResourceId -DetailedOutput -StartTime $BeginDate | ConvertTo-Json | Out-File $FilePathJSON
 
         '===================================================================== ' | Out-File $FilePath -Append
 
@@ -131,8 +112,8 @@ Write-Host "Enumerating your Stream Analytics jobs" -ForegroundColor Cyan
 
 Try
     {
-
-        $AllJobs = Get-AzureStreamAnalyticsJob -NoExpand
+    
+        $AllJobs = Get-AzureRmStreamAnalyticsJob -NoExpand
     }
 Catch
     {
