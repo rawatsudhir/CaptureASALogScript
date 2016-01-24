@@ -6,7 +6,7 @@
 ## 4. The script will prompt you to choose between 1 to 14 days worth of Operation Log events to collect.
 
 Login-AzureRmAccount
-# Below statement used to capture subscription id in a variable.
+# Below statement used to capture subscription id in variable.
 $SubscriptionId = Get-AzureSubscription -Current
 
 # Pick an Output folder before you run the code if needed to change.
@@ -88,10 +88,6 @@ function PrintJobAndLog
         "`r`n" + 'LOGS START FROM DATE :- ' + $BeginDate                         | Out-File $FilePath -Append
         
         Get-AzureRmlog -ResourceId $ResourceId -DetailedOutput -StartTime $BeginDate | Out-File $FilePath -Append
-
-        Write-Host $ResourceId
-        Write-Host $BeginDate
-
         Get-AzureRmlog -ResourceId $ResourceId -DetailedOutput -StartTime $BeginDate | ConvertTo-Json | Out-File $FilePathJSON
 
         '===================================================================== ' | Out-File $FilePath -Append
