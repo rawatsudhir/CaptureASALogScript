@@ -1,5 +1,4 @@
-## This Powershell (.ps1) script is used to collect Microsoft Azure Stream Analytics job definitions and operation logs for a given account,
-## For the intent of sharing this information with the Microsoft CSS Azure Support Team engineers for troubleshooting purposes.
+## This Powershell (.ps1) script is used to collect Microsoft Azure Stream Analytics job definitions and operation logs for a given account.
 ## 1. Please set the output folder below if C:\Temp is not sufficient. At the end, the output will be zipped into that location.
 ## 2. The script will prompt you for your Azure credential if you do not have it actively configured.
 ## 3. The script will prompt you on which job to collect data for, or all jobs as needed.
@@ -225,7 +224,7 @@ Try
       }
       Else
       {
-        Write-Host "Done. Could not generate Zip file. Please zip the folder ", $folder, "and send to Microsoft Support." -BackgroundColor Red
+        Write-Host "Done. Could not generate Zip file.", $folder, " ." -BackgroundColor Red
         return 
       }
     } 
@@ -233,9 +232,9 @@ Try
     #(dir $ZipFileName).IsReadOnly = $false 
     $ZipFile = (new-object -com shell.application).NameSpace($ZipFileName) 
     $ZipFile.CopyHere($Directory.FullName)
-    Write-Host "Done. Please send the .zip file ", $ZipFileName, "to Microsoft Support." -BackgroundColor Green -ForegroundColor Black
+    Write-Host "Done. ", $ZipFileName, "." -BackgroundColor Green -ForegroundColor Black
 }
 Catch
 {
-    Write-Host "Done. Could not generate Zip file. Please zip the folder ", $folder,  "and send to Microsoft Support." -BackgroundColor Red
+    Write-Host "Done. Could not generate Zip file. ", $folder,  "." -BackgroundColor Red
 }
